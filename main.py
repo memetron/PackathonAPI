@@ -24,11 +24,12 @@ class GetCity(Resource):
 
 class GetWeather(Resource):
     def get(self):
+        key = "INSERT WEATHER API KEY"
         city = request.args['city']
-        response = requests.get("http://api.weatherapi.com/v1/current.json?key="+"61d4d7e2f1f34ff0b3112501211411"+"&q="+city).json()
+        response = requests.get("http://api.weatherapi.com/v1/current.json?key="+key+"&q="+city).json()
         return jsonify(response['current']['temp_f'])
 
-mapquestKey = "jpTxqTsCYipW2ociikAZN4GzxuZgZ7p4"
+mapquestKey = "INSERT MAPQUEST KEY"
 
 class status(Resource):
     def get(self):
@@ -38,8 +39,8 @@ class status(Resource):
             return {'data': Exception}
 
 def genAmadeusToken():
-    secret = "AjL2GS6GjnXq62Qa"
-    id = "xSoUY3qmYyaYdEv3DzkGGW6m776A5yjy"
+    secret = "INSERT AMADEUS SECRET"
+    id = "INSERT AMADEUS ID"
     amadeusToken = requests.post("https://test.api.amadeus.com/v1/security/oauth2/token",
                                  headers={"Content-Type": "application/x-www-form-urlencoded"},
                                  data=("grant_type=client_credentials&client_id=" + id + "&client_secret=" + secret))
