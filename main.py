@@ -7,10 +7,19 @@ import json
 class ThingsToDo(Resource):
     def get(self):
         args = request.args
+        url = request.url
+        with open("thingstodo.json") as thingstodo:
+            data = json.load(thingstodo)
+        if url in data:
+            return jsonify({'data': data[url]})
+
         if 'categories' not in args.keys():
             destinations = getDestinations(args['location'])
         else:
             destinations = getDestinations(args['location'], args['categories'].split(','))
+        data[url] = destinations
+        with open("thingstodo.json",'w') as thingstodo:
+            json.dump(data, thingstodo)
         return jsonify({'data': destinations})
 
 class GetCity(Resource):
@@ -24,12 +33,11 @@ class GetCity(Resource):
 
 class GetWeather(Resource):
     def get(self):
-        key = "INSERT WEATHER API KEY"
         city = request.args['city']
-        response = requests.get("http://api.weatherapi.com/v1/current.json?key="+key+"&q="+city).json()
+        response = requests.get("http://api.weatherapi.com/v1/current.json?key="+""+"&q="+city).json()
         return jsonify(response['current']['temp_f'])
 
-mapquestKey = "INSERT MAPQUEST KEY"
+mapquestKey = ""
 
 class status(Resource):
     def get(self):
@@ -39,8 +47,8 @@ class status(Resource):
             return {'data': Exception}
 
 def genAmadeusToken():
-    secret = "INSERT AMADEUS SECRET"
-    id = "INSERT AMADEUS ID"
+    secret = ""
+    id = ""
     amadeusToken = requests.post("https://test.api.amadeus.com/v1/security/oauth2/token",
                                  headers={"Content-Type": "application/x-www-form-urlencoded"},
                                  data=("grant_type=client_credentials&client_id=" + id + "&client_secret=" + secret))
@@ -58,6 +66,7 @@ def getDestinations(city, tags = None):
         for tag in tags[1:]:
             url+="," + tag
     response = requests.get(url, headers=h).json()
+    print(response)
     return [place["name"] for place in response["data"]]
 
 
